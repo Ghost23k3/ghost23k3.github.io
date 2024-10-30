@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Dynamische Ordnerauswahl</title>
+    <link rel="stylesheet" href="../../../../CSS/style_body.css">
+    <link rel="stylesheet" href="../../../../CSS/style_header.css">
+    <link rel="stylesheet" href="../../../../CSS/style_login.css">
+    <link rel="stylesheet" href="../../../../CSS/style.css">
+    <script src="../JS/darkmode.js" defer></script> <!-- Pfad zur darkmode.js -->
+
+    <script>
+        function addParagraph() {
+            const container = document.getElementById('contentContainer');
+            const newParagraph = document.createElement('div');
+            newParagraph.className = 'draggable';
+            newParagraph.innerHTML = `
+                <input type="text" class="button_create" name="title[]" placeholder="Titel für Paragraph...">
+                <textarea name="content[]" rows="4" placeholder="Gib deinen Paragraphen ein..."></textarea>
+                <input type="hidden" name="contentType[]" value="paragraph">
+                <button type="button" class="button_delete" onclick="removeElement(this)">Entfernen</button>
+                <button type="button" class="button_create" onclick="moveUp(this)">↑</button>
+                <button type="button" class="button_create" onclick="moveDown(this)">↓</button>
+            `;
+            container.appendChild(newParagraph);
+        }
+
+        let listItemCounter = 0;
+
+        function addListItem() {
+            const container = document.getElementById('contentContainer');
+            const newListItem = document.createElement('div');
+            newListItem.className = 'draggable';
+            newListItem.dataset.listIndex = listItemCounter; // Setze einen eindeutigen Index für jedes Listenelement
+
+            newListItem.innerHTML = `
+                <input type="text" class="button_create" name="title[]" placeholder="Titel für Listenelement...">
+                <div class="list-items">
+                    <input type="text" name="content[${listItemCounter}][]" placeholder="Item eingeben...">
+                </div>
+                <button type="button" class="button_add" onclick="addListItemInput(this)">Weitere Item hinzufügen</button>
+                <input type="hidden" name="contentType[]" value="list">
+                <button type="button" class="button_delete" onclick="removeElement(this)">Entfernen</button>
+                <button type="button" class="button_create" onclick="moveUp(this)">↑</button>
+                <button type="button" class="button_create" onclick="moveDown(this)">↓</button>
+            `;
+
+            container.appendChild(newListItem);
+            listItemCounter++;
+        }
+
+        function addListItemInput(button) {
+            const listItemDiv = button.parentElement;
+            const listItemsContainer = listItemDiv.querySelector('.list-items');
+            const newInput = document.createElement('input');
+            newInput.type = 'text';
+            newInput.name = `content[${listItemDiv.dataset.listIndex}][]`;
+            newInput.placeholder = 'Item eingeben...';
+            listItemsContainer.appendChild(newInput);
+        }
+
+        function removeElement(button) {
+            const element = button.parentElement;
+            element.remove();
+        }
+
+        function moveUp(button) {
+            const element = button.parentElement;
+            const previousElement = element.previousElementSibling;
+            if (previousElement) {
+                element.parentElement.insertBefore(element, previousElement);
+            }
+        }
+
+        function moveDown(button) {
+            const element = button.parentElement;
+            const nextElement = element.nextElementSibling;
+            if (nextElement) {
+                element.parentElement.insertBefore(nextElement, element);
+            }
+        }
+
+        function loadSubfolders(level) {
+            const mainFolder = document.getElementById('level1').value;
+            const subfolderSelects = document.querySelectorAll(`select[name='subfolder[]']`);
+            
+            // Schleife über alle vorhandenen Dropdowns für Unterordner
+            subfolderSelects.forEach((select, index) => {
+                select.innerHTML = ''; // Leere die Dropdowns
+
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = 'Bitte auswählen';
+                select.appendChild(defaultOption);
+
+                if (mainFolder) {
+                    fetch(`../PHP/get_subfolders.php?folder=${mainFolder}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            data.forEach(subfolder => {
+                                const option = document.createElement('option');
+                                option.value = subfolder;
+                                option.textContent = subfolder;
+                                select.appendChild(option);
+                            });
+                        })
+                        .catch(error => console.error('Fehler beim Laden der Unterordner:', error));
+                }
+            });
+        }
+
+        function addSubfolderSelect() {
+            const subfolderContainer = document.getElementById('subfolderContainer');
+            
+            // Erstelle ein neues Dropdown für die Unterordner
+            const newSelect = document.createElement('select');
+            newSelect.name = 'subfolder[]';
+            newSelect.onchange = function() { loadSubfolders(2); }; // Rufe die loadSubfolders-Funktion auf
+
+            // Füge die Standardoption hinzu
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = 'Bitte auswählen';
+            newSelect.appendChild(defaultOption);
+
+            // Füge die vorhandenen Hauptordner zu diesem neuen Dropdown hinzu
+            const mainFolder = document.getElementById('level1').value;
+            if (mainFolder) {
+                fetch(`../PHP/get_subfolders.php?folder=${mainFolder}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.forEach(subfolder => {
+                            const option = document.createElement('option');
+                            option.value = subfolder;  // Der Wert sollte korrekt gesetzt sein
+                            option.textContent = subfolder;
+                            select.appendChild(option);
+                        });
+                    })
+                    .catch(error => console.error('Fehler beim Laden der Unterordner:', error));
+            }
+
+            // Füge das neue Dropdown in den Container ein
+            subfolderContainer.appendChild(newSelect);
+        }
+
+        function addImage() {
+            const container = document.getElementById('contentContainer');
+            const newImage = document.createElement('div');
+            newImage.className = 'draggable';
+            newImage.innerHTML = `
+                <input type="text" class="button_create" name="title[]" placeholder="Titel für Bild...">
+                <input type="text" name="content[]" placeholder="Bild-URL eingeben...">
+                <input type="file" name="fileContent[]" accept="image/*" onchange="previewFile(this)">
+                <input type="hidden" name="contentType[]" value="image">
+                <button type="button" class="button_delete" onclick="removeElement(this)">Entfernen</button>
+                <button type="button" class="button_create" onclick="moveUp(this)">↑</button>
+                <button type="button" class="button_create" onclick="moveDown(this)">↓</button>
+            `;
+            container.appendChild(newImage);
+        }
+
+        function addVideo() {
+            const container = document.getElementById('contentContainer');
+            const newVideo = document.createElement('div');
+            newVideo.className = 'draggable';
+            newVideo.innerHTML = `
+                <input type="text" class="button_create" name="title[]" placeholder="Titel für Video...">
+                <input type="text" name="content[]" placeholder="Video-URL eingeben...">
+                <input type="file" name="fileContent[]" accept="video/*" onchange="previewFile(this)">
+                <input type="hidden" name="contentType[]" value="video">
+                <button type="button" class="button_delete" onclick="removeElement(this)">Entfernen</button>
+                <button type="button" class="button_create" onclick="moveUp(this)">↑</button>
+                <button type="button" class="button_create" onclick="moveDown(this)">↓</button>
+            `;
+            container.appendChild(newVideo);
+        }
+
+        function previewFile(input) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.createElement(file.type.startsWith('image/') ? 'img' : 'video');
+                    preview.src = e.target.result;
+                    preview.style.maxWidth = '100%';
+                    preview.style.marginTop = '10px';
+                    input.parentNode.appendChild(preview);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+       
+    </script>
+</head>
+<body>
+    <header>
+        <div>
+            <a id="click-me" class="a_header" href="index.html">Home</a>
+            <a class="a_header" href="create.html">Create Page</a>
+        </div>
+    
+        <p class="p_header">Login</p>
+        <div>
+
+        <!-- Dark Mode Toggle Button in Navbar -->
+        <button id="dark-mode-toggle">Dark Mode</button>
+        </div>
+    </header>
+
+    <div class="div_body">
+    <form id="myForm" method="post" action="/PHP/create.php" class="login-form" enctype="multipart/form-data">
+        <div>
+            <div>
+                <label for="documentName">Dokumentenname:</label>
+                <input class="button_create" type="text" id="documentName" name="documentName" required placeholder="Gib den Namen des Dokuments ein...">
+                <label for="level1">Speicherort:</label>
+                <select id="mainfolder" name="mainfolder" onchange="loadSubfolders(1)">
+                    <option value="">Bitte auswählen</option>
+                    <option value="US_Coursea">US Coursea</option>
+                    <option value="US_Privat">US Privat</option>
+                    <option value="US_Novon">US Novon</option>
+                </select>
+            </div>
+            <div>
+                <div id="subfolderContainer">
+                    <label for="level2">Unterordner:</label>
+                    <select id="level2" name="subfolder[]" onchange="loadSubfolders(2)">
+                        <option value="">Bitte auswählen</option>
+                    </select>
+                </div>
+                <button type="button" class="button_create" onclick="addSubfolderSelect()">Weitere Unterordner hinzufügen</button>
+            </div>
+        </div>
+        <div id="contentContainer"></div>
+        <div class="div_buttons">
+            <button type="button" class="button_add" onclick="addParagraph()">Paragraph</button>
+            <button type="button" class="button_add" onclick="addListItem()">Liste</button>
+            <button type="button" class="button_add" onclick="addTitle()">Titel</button>
+            <button type="button" class="button_add" onclick="addImage()">Bild</button>
+            <button type="button" class="button_add" onclick="addVideo()">Video</button>
+        </div>
+        <input type="submit" value="Absenden" class="button_send">
+        <div id="response"></div>
+    </form>
+</div>
+
+<script>
+
+    document.getElementById('myForm').onsubmit = function(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+
+        fetch(this.action, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('response').innerHTML = data;
+        })
+        .catch(error => {
+            console.error('Fehler:', error);
+        });
+    };
+</script>
+</body>
+</html>

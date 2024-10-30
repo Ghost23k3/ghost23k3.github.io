@@ -1,0 +1,173 @@
+/* Allgemeine Stile */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Verdana', 'Geneva', 'Tahoma', sans-serif;
+    font-size: 15px;
+}
+
+:root {
+    --primary-bg-light: #f5f5f5;
+    --primary-bg-dark: #333;
+    --primary-color-light: green;
+    --primary-color-dark: green;
+    --text-color-dark: #333;
+    --text-color-light: #f5f5f5;
+    --header-bg-light: #393938;
+    --header-bg-dark: #444;
+    --button-color: green;
+    --button-hover-color: green;
+    --border-color: #444;
+    --tab-bg-light: #6b6b6b; /* Hellgrauer Hintergrund für Light Mode */
+    --tab-bg-dark: #444; /* Dunklerer Hintergrund für Dark Mode */
+}
+
+/* Light Mode Styles */
+body[data-theme="light"] {
+    --primary-bg: var(--primary-bg-light);
+    --primary-color: var(--primary-color-light);
+    --text-color: var(--text-color-dark);
+    --header-bg: var(--header-bg-dark);
+    --body-div: var(--header-bg-dark);
+    --selection-div: var(--primary-color-light);
+    --tab-bg: var(--tab-bg-light);
+}
+
+/* Dark Mode Styles */
+body[data-theme="dark"] {
+    --primary-bg: var(--primary-bg-dark);
+    --primary-color: var(--primary-color-dark);
+    --text-color: var(--text-color-light);
+    --header-bg: var(--header-bg-dark);
+    --body-div: var(--header-bg-light); /* korrigiert */
+    --selection-div: var(--primary-color-dark); /* korrigiert */
+    --tab-bg: var(--tab-bg-light);
+}
+
+html, body {
+    background-color: var(--primary-bg);
+    display: flex;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+}
+
+p{
+    padding-left: 25px;
+    padding-right: 25px;
+    padding-top: 10px;
+    padding-bottom: 5px;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header-Stile */
+header {
+    width: 100vw; /* Volle Breite des Viewports */
+    position: sticky;
+    top: 0;
+    left: 0; /* Startet ganz links */
+    background-color: var(--header-bg); /* statt #393938 */
+    color: var(--text-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    z-index: 100;
+    border-bottom: 2px solid #555;
+    margin-bottom: 10px;
+}
+
+header a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 8px 12px;
+    background-color: #4e4e4e;
+    border-radius: 4px;
+}
+
+.p_header {
+    color: green;
+    margin: 0;
+    padding: 0 10px;
+    font-weight: bold;
+}
+
+/* Navigation (Tab) */
+#directory {
+    font-size: 2em;
+    font-weight: bold;
+    color: var(--text-color-light);
+    text-align: center;
+}
+
+.p_body {
+    background-color: none;
+    font-weight: bold;
+    color: var(--button-color);
+}
+
+
+#tab {
+    margin: 20px;
+    padding: 10px;
+    padding-bottom: 40px;
+    background-color: var(--tab-bg); /* Dynamische Hintergrundfarbe */
+    border-radius: 8px;
+    width: calc(100% - 40px);
+}
+
+.title_body {
+    font-weight: bold;
+    font-size: 1.2em;
+    color: var(--text-color-dark);
+    padding: 10px 0;
+    margin-left: 25px;
+}
+
+.a_body {
+    max-width: 90%; /* Verhindert, dass die Breite zu groß wird */
+    width: 100%; /* Stellt sicher, dass das Element immer flexibel ist */
+    text-decoration: none;
+    color: var(--text-color-dark);
+    display: block;
+    padding: 10px;
+    margin: 10px auto; /* Zentriert das Element */
+    border-radius: 10px;
+    background-color: gray;
+    border: 1px solid rgb(212, 203, 203);
+    transition: background-color 0.3s;
+}
+
+.a_body:hover {
+    background-color: var(--primary-color);
+}
+
+/* Hauptinhalt */
+.div_body {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    font-size: 1em;
+}
+
+/* Button für Dark Mode Toggle */
+#dark-mode-toggle {
+    background-color: var(--button-color);
+    border: none;
+    color: #fff;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 1em;
+    transition: background-color 0.3s;
+}
+
+#dark-mode-toggle:hover {
+    background-color: var(--button-hover-color);
+}

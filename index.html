@@ -1,18 +1,33 @@
+<!DOCTYPE html>
 <html>
-    <head>
+<head>
+    <title>Login</title>
+    <link rel="stylesheet" href="../../../../CSS/style_body.css">
+    <script src="../JS/darkmode.js" defer></script> <!-- Pfad zur darkmode.js -->
 
-    </head>
-    <body>
-        <header>
+</head>
+<body>
+<header>
+    <div>
+        <a id="click-me" class="a_header" href="index.html">Home</a>
+        <a class="a_header" href="create.html">Create Page</a>
+    </div>
 
-        </header>
+    <p class="p_header">Login</p>
+    <div>
 
-        <p>Test</p>
+        <!-- Dark Mode Toggle Button in Navbar -->
+        <button id="dark-mode-toggle">Dark Mode</button>
+    </div>
+</header>
+<div id="login_first_div">
+    <form action="/PHP/login.php" method="POST">
+        <input type="text" id="username" name="username" placeholder="username" required>
+        <input type="password" id="password" name="password" placeholder="password" required>
+        <button type="submit">Login</button>
+    </form>
+</div>
 
 
-        <footer>
-
-        </footer>
-
-    </body>
+</body>
 </html>
